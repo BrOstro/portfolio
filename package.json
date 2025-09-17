@@ -9,8 +9,9 @@
 		"lint": "eslint",
 		"migrate:generate": "drizzle-kit generate",
 		"migrate:push": "drizzle-kit push --force",
+		"migrate:apply": "drizzle-kit migrate",
 		"ingest": "tsx scripts/ingest-batch.ts",
-		"postinstall": "pnpm run migrate:push && pnpm run ingest"
+		"postinstall": "pnpm run migrate:apply && pnpm run ingest"
 	},
 	"dependencies": {
 		"@neondatabase/serverless": "^1.0.1",
