@@ -2,8 +2,18 @@ import {NextResponse} from 'next/server';
 import {getClientIdentifier, retrieveSimilar, RetrieverError} from '@/lib/retriever';
 
 /**
- * Debug endpoint to test rate limiting
- * Only available in development mode
+ * @swagger
+ * /api/debug/rate-limit:
+ *   get:
+ *     summary: Debug endpoint to test rate limiting
+ *     description: This endpoint is only available in development mode and is used to test the rate limiting functionality.
+ *     responses:
+ *       200:
+ *         description: Success
+ *       404:
+ *         description: Not available in production
+ *       429:
+ *         description: Rate limit exceeded
  */
 export async function GET(req: Request) {
 	// Only allow in development

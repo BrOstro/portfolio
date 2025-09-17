@@ -1,4 +1,11 @@
-﻿export function chunkText(body: string, target = 800, overlap = 120): string[] {
+/**
+ * Chunks a string of text into smaller pieces, with a target size and overlap.
+ * @param body The text to chunk.
+ * @param target The target size of each chunk.
+ * @param overlap The amount of overlap between chunks.
+ * @returns An array of text chunks.
+ */
+export function chunkText(body: string, target = 800, overlap = 120): string[] {
 	if (!body || !body.trim()) return [];
 	if (target <= 0) return [body.trim()];
 	if (overlap < 0) overlap = 0;

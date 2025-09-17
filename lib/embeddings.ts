@@ -1,4 +1,4 @@
-﻿import OpenAI from 'openai';
+import OpenAI from 'openai';
 import {db} from './db';
 import {sql} from 'drizzle-orm';
 import {chunkText} from './chunk';
@@ -16,6 +16,16 @@ type IngestOptions = {
 	weight?: number;
 };
 
+/**
+ * Upserts a document and its embeddings into the database.
+ * @param opts The options for ingesting the document.
+ * @param opts.slug The slug of the document.
+ * @param opts.title The title of the document.
+ * @param opts.content The content of the document.
+ * @param opts.type The type of the document (e.g., 'resume', 'about').
+ * @param opts.weight The weight of the document.
+ * @returns The number of chunks inserted.
+ */
 export async function upsertDocumentWithEmbeddings(opts: IngestOptions) {
 	const {slug, title, content, type = 'generic', weight = 1} = opts;
 

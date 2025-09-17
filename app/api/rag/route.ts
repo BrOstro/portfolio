@@ -1,7 +1,36 @@
-﻿import { NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { retrieveSimilar, getClientIdentifier, RetrieverError } from '@/lib/retriever';
 import { synthesizeAnswer } from '@/lib/answer';
 
+/**
+ * @swagger
+ * /api/rag:
+ *   post:
+ *     summary: Get an answer to a query using the RAG system
+ *     description: This endpoint takes a query and a slug, retrieves similar documents from the database, and synthesizes an answer using the OpenAI API.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               query:
+ *                 type: string
+ *               slug:
+ *                 type: string
+ *               topK:
+ *                 type: number
+ *     responses:
+ *       200:
+ *         description: Success
+ *       400:
+ *         description: Bad request
+ *       429:
+ *         description: Rate limit exceeded
+ *       500:
+ *         description: Internal server error
+ */
 export async function POST(req: Request) {
 	try {
 		const { query, slug = 'resume', topK = 6 } = await req.json();

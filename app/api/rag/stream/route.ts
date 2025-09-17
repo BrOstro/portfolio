@@ -1,4 +1,4 @@
-﻿import {NextRequest} from 'next/server';
+import {NextRequest} from 'next/server';
 import OpenAI from 'openai';
 import {retrieveSimilar, getClientIdentifier, RetrieverError} from '@/lib/retriever';
 import {buildPrompt} from '@/lib/answer';
@@ -6,6 +6,35 @@ import {verifyTurnstileToken, getClientIP} from '@/lib/turnstile';
 
 const openai = new OpenAI({apiKey: process.env.OPENAI_API_KEY!});
 
+/**
+ * @swagger
+ * /api/rag/stream:
+ *   post:
+ *     summary: Get a streaming answer to a query using the RAG system
+ *     description: This endpoint takes a query and a scope, retrieves similar documents from the database, and streams an answer using the OpenAI API.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               query:
+ *                 type: string
+ *               scope:
+ *                 type: string
+ *               turnstileToken:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Success
+ *       400:
+ *         description: Bad request
+ *       429:
+ *         description: Rate limit exceeded
+ *       500:
+ *         description: Internal server error
+ */
 export async function POST(req: NextRequest) {
 	try {
 		const { query, scope = 'all', turnstileToken } = await req.json();

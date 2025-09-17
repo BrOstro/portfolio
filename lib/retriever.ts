@@ -1,4 +1,4 @@
-﻿import {db} from "./db";
+import {db} from "./db";
 import {sql, inArray} from "drizzle-orm";
 import {documents} from "./schema";
 import {
@@ -25,7 +25,12 @@ setInterval(() => {
 	}
 }, RATE_LIMIT_CONFIG.CLEANUP_INTERVAL_MS);
 
-// Input validation and sanitization
+/**
+ * Validates and sanitizes the input query and slugs.
+ * @param query The user's query.
+ * @param slugs An array of document slugs to search.
+ * @returns An object containing the sanitized query, slugs, and any validation errors.
+ */
 function validateAndSanitizeInput(query: string, slugs?: string[]): {
 	query: string;
 	slugs: string[] | undefined;
@@ -78,7 +83,11 @@ function validateAndSanitizeInput(query: string, slugs?: string[]): {
 	};
 }
 
-// Rate limiting function with concurrency handling
+/**
+ * Checks the rate limit for a given identifier.
+ * @param identifier The identifier to check the rate limit for (e.g., IP address).
+ * @returns An object indicating whether the request is allowed and the reset time if it's not.
+ */
 function checkRateLimit(identifier: string): { allowed: boolean; resetTime?: number } {
 	const now = Date.now();
 
@@ -116,6 +125,9 @@ function checkRateLimit(identifier: string): { allowed: boolean; resetTime?: num
 	return {allowed: true};
 }
 
+/**
+ * Custom error class for retriever-related errors.
+ */
 export class RetrieverError extends Error {
 	constructor(
 		message: string,
@@ -128,31 +140,47 @@ export class RetrieverError extends Error {
 	}
 }
 
+/**
+ * Custom error class for validation errors.
+ */
 export class ValidationError extends RetrieverError {
 	constructor(message: string, details?: any) {
 		super(message, 'VALIDATION_ERROR', 400, details);
 	}
 }
 
+/**
+ * Custom error class for rate limit errors.
+ */
 export class RateLimitError extends RetrieverError {
 	constructor(resetTime: number) {
 		super('Rate limit exceeded', 'RATE_LIMIT_EXCEEDED', 429, {resetTime});
 	}
 }
 
+/**
+ * Custom error class for database errors.
+ */
 export class DatabaseError extends RetrieverError {
 	constructor(message: string, details?: any) {
 		super(message, 'DATABASE_ERROR', 500, details);
 	}
 }
 
+/**
+ * Custom error class for embedding errors.
+ */
 export class EmbeddingError extends RetrieverError {
 	constructor(message: string, details?: any) {
 		super(message, 'EMBEDDING_ERROR', 500, details);
 	}
 }
 
-// Helper function to get client identifier for rate limiting
+/**
+ * Gets the client identifier for rate limiting.
+ * @param request The request object.
+ * @returns The client identifier (e.g., IP address).
+ */
 export function getClientIdentifier(request: Request): string {
 	// Try to get IP from various headers (for different proxy setups)
 	const forwarded = request.headers.get('x-forwarded-for');
@@ -186,6 +214,13 @@ const SEEDS_PER_DOC = 1;      // how many areas of each doc to open windows arou
 const WINDOW_RADIUS = 2;      // include neighbors seed +/- 2 -> captures whole section
 const MAX_CONTEXT_CHARS = 4500;
 
+/**
+ * Picks a set of seeds from a list of items.
+ * @param items The items to pick seeds from.
+ * @param maxSeeds The maximum number of seeds to pick.
+ * @param gap The minimum gap between seeds.
+ * @returns An array of seeds.
+ */
 function pickSeeds<T extends { chunk_index: number }>(items: T[], maxSeeds = SEEDS_PER_DOC, gap = SEED_GAP) {
 	const out: T[] = [];
 	for (const it of items) {
@@ -198,6 +233,13 @@ function pickSeeds<T extends { chunk_index: number }>(items: T[], maxSeeds = SEE
 	return out;
 }
 
+/**
+ * Retrieves similar chunks from the database.
+ * @param slugs An array of document slugs to search.
+ * @param query The user's query.
+ * @param clientIdentifier The client identifier for rate limiting.
+ * @returns A promise that resolves to an array of retrieved chunks.
+ */
 export async function retrieveSimilar(
 	slugs: string[] | undefined, // e.g. ['resume','about'] or undefined = all docs
 	query: string,
@@ -326,8 +368,8 @@ export async function retrieveSimilar(
 				}
 			} catch (error) {
 				console.error(`Error processing document ${d.slug}:`, error);
+				}
 			}
-		}
 
 		// Pack everything into a safe char budget (prioritize by similarity score)
 		gathered.sort((a, b) => b.similarity - a.similarity);
