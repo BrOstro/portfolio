@@ -5,7 +5,7 @@ import {ScrollArea} from "@/components/ui/scroll-area"
 import {motion, AnimatePresence} from "motion/react"
 import LoadingAnimation from "@/components/core/loading-animation"
 
-type Cite = { chunkIndex: number; preview: string; similarity: number }
+export type Cite = { chunkIndex: number; preview: string; similarity: number }
 
 function PlainText({text}: { text: string }) {
 	// Preserve newlines, but make paragraphs readable.

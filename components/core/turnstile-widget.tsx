@@ -13,7 +13,7 @@ function TurnstileWidget({onVerify, onError, onExpire}: TurnstileWidgetProps) {
 
 	return (
 		<Turnstile
-			sitekey="0x4AAAAAAB1yllAcUwWUmU4C"
+			sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "0x4AAAAAAB1yllAcUwWUmU4C"}
 			onVerify={(token) => {
 				onVerify?.(token);
 			}}
@@ -23,6 +23,7 @@ function TurnstileWidget({onVerify, onError, onExpire}: TurnstileWidgetProps) {
 			onExpire={() => {
 				onExpire?.();
 			}}
+			refreshExpired={"auto"}
 		/>
 	);
 }

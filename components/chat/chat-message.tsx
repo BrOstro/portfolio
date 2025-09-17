@@ -1,4 +1,4 @@
-﻿import AnswerCard from "@/components/chat/answer-card"
+﻿import AnswerCard, {Cite} from "@/components/chat/answer-card"
 import {motion} from "motion/react"
 
 function formatTime(ts?: number) {
@@ -9,7 +9,7 @@ function formatTime(ts?: number) {
 
 export default function ChatMessage({
 	                                    role, text, cites, ts
-                                    }: { role: 'user' | 'assistant'; text: string; cites?: any[]; ts?: number }) {
+                                    }: { role: 'user' | 'assistant'; text: string; cites?: Cite[]; ts?: number }) {
 	if (role === 'assistant') {
 		return (
 			<motion.div className="space-y-1" initial={{opacity: 0, y: 6}} animate={{opacity: 1, y: 0}}

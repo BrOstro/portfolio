@@ -234,8 +234,8 @@ export default function LandingPage() {
 										animate={{opacity: 1, y: 0}}
 										transition={{duration: 0.6, delay: 1.8}}
 									>
-										I'm excited about building tools that empower people and push the limits of
-										what's possible with technology.
+										I&apos;m excited about building tools that empower people and push the limits of
+										what&apos;s possible with technology.
 									</motion.p>
 
 									{/* Skills */}

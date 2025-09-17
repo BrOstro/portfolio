@@ -133,7 +133,7 @@ export class RetrieverError extends Error {
 		message: string,
 		public code: string,
 		public statusCode: number = 500,
-		public details?: any
+		public details?: unknown
 	) {
 		super(message);
 		this.name = 'RetrieverError';
@@ -144,7 +144,7 @@ export class RetrieverError extends Error {
  * Custom error class for validation errors.
  */
 export class ValidationError extends RetrieverError {
-	constructor(message: string, details?: any) {
+	constructor(message: string, details?: unknown) {
 		super(message, 'VALIDATION_ERROR', 400, details);
 	}
 }
@@ -162,7 +162,7 @@ export class RateLimitError extends RetrieverError {
  * Custom error class for database errors.
  */
 export class DatabaseError extends RetrieverError {
-	constructor(message: string, details?: any) {
+	constructor(message: string, details?: unknown) {
 		super(message, 'DATABASE_ERROR', 500, details);
 	}
 }
@@ -171,7 +171,7 @@ export class DatabaseError extends RetrieverError {
  * Custom error class for embedding errors.
  */
 export class EmbeddingError extends RetrieverError {
-	constructor(message: string, details?: any) {
+	constructor(message: string, details?: unknown) {
 		super(message, 'EMBEDDING_ERROR', 500, details);
 	}
 }
@@ -205,6 +205,12 @@ export type RetrievedChunk = {
 	chunk_index: number;
 	content: string;
 	similarity: number;
+};
+
+type DbQueryResult = {
+	chunk_index: number | string;
+	content: string;
+	similarity: number | string;
 };
 
 // knobs
@@ -323,7 +329,7 @@ export async function retrieveSimilar(
                         LIMIT ${CANDIDATES_PER_DOC}
 				`);
 
-				const candidates = (candRows.rows as any[]).map(r => ({
+				const candidates = (candRows.rows as DbQueryResult[]).map(r => ({
 					document_id: d.id,
 					document_slug: d.slug,
 					chunk_index: Number(r.chunk_index),
@@ -357,7 +363,7 @@ export async function retrieveSimilar(
                     ORDER BY e.chunk_index ASC
 				`);
 
-				for (const r of winRows.rows as any[]) {
+				for (const r of winRows.rows as DbQueryResult[]) {
 					gathered.push({
 						document_id: d.id,
 						document_slug: d.slug,

@@ -1,15 +1,15 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import { AnimatePresence, motion } from 'motion/react';
+import {useEffect, useRef, useState} from 'react';
+import {AnimatePresence, motion} from 'motion/react';
 import ChatInput from '@/components/chat/chat-input';
 import ChatMessage from '@/components/chat/chat-message';
 import PromptChips from '@/components/chat/prompt-chips';
-import TurnstileWidget from '@/components/core/turnstile-widget';
-import { Sparkles } from 'lucide-react';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import {Sparkles} from 'lucide-react';
+import {ScrollArea} from '@/components/ui/scroll-area';
+import Turnstile, {useTurnstile} from "react-turnstile";
 
-type Msg = { role: 'user'|'assistant'; text: string; cites?: any[]; ts: number };
+type Msg = { role: 'user' | 'assistant'; text: string; cites?: any[]; ts: number };
 
 interface ChatComponentProps {
 	className?: string;
@@ -19,17 +19,18 @@ interface ChatComponentProps {
 }
 
 export default function ChatComponent({
-	className = "", 
-	showTitle = true, 
-	showScopeButtons = true, 
-	showTip = true 
-}: ChatComponentProps) {
+	                                      className = "",
+	                                      showTitle = true,
+	                                      showScopeButtons = true,
+	                                      showTip = true
+                                      }: ChatComponentProps) {
 	const [messages, setMessages] = useState<Msg[]>([]);
 	const [loading, setLoading] = useState(false);
-	const [scope, setScope] = useState<'all'|'resume'|'about'>('all');
+	const [scope, setScope] = useState<'all' | 'resume' | 'about'>('all');
 	const [inputValue, setInputValue] = useState('');
 	const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 	const [turnstileError, setTurnstileError] = useState<string | null>(null);
+	const turnstile = useTurnstile();
 
 	// Auto-scroll container ref (wrapper around ScrollArea)
 	const scrollRef = useRef<HTMLDivElement | null>(null);
@@ -49,33 +50,37 @@ export default function ChatComponent({
 		}
 
 		setTurnstileError(null);
-		setMessages(m => [...m, { role: 'user', text: query, ts: Date.now() }]);
+		setMessages(m => [...m, {role: 'user', text: query, ts: Date.now()}]);
 		setLoading(true);
 
 		// Create an empty assistant message we can append tokens into
 		const idx = messages.length + 1;
-		setMessages(m => [...m, { role: 'assistant', text: '', ts: Date.now() }]);
+		setMessages(m => [...m, {role: 'assistant', text: '', ts: Date.now()}]);
 
 		const res = await fetch('/api/rag/stream', {
 			method: 'POST',
-			body: JSON.stringify({ query, scope, turnstileToken }),
+			body: JSON.stringify({query, scope, turnstileToken}),
 		});
 
 		if (!res.ok || !res.body) {
 			setLoading(false);
 			const errorData = await res.json().catch(() => ({}));
-			
+
 			// Handle Turnstile verification failure
 			if (res.status === 400 && errorData.code === 'TURNSTILE_VERIFICATION_FAILED') {
 				setTurnstileToken(null);
 				setTurnstileError('CAPTCHA verification failed. Please try again.');
 			}
-			
+
 			setMessages(m => {
 				const next = [...m];
-				next[idx] = { ...next[idx], role: 'assistant', text: 'Sorry, something went wrong.' } as Msg;
+				next[idx] = {...next[idx], role: 'assistant', text: 'Sorry, something went wrong.'} as Msg;
 				return next;
 			});
+			
+			// Reset Turnstile and clear token after error
+			turnstile.reset();
+			setTurnstileToken(null);
 			return;
 		}
 
@@ -85,9 +90,9 @@ export default function ChatComponent({
 		let citations: any[] | undefined;
 
 		while (true) {
-			const { value, done } = await reader.read();
+			const {value, done} = await reader.read();
 			if (done) break;
-			buffer += decoder.decode(value, { stream: true });
+			buffer += decoder.decode(value, {stream: true});
 
 			// NDJSON parse: split on newlines and keep the last partial line in buffer
 			const lines = buffer.split('\n');
@@ -102,22 +107,25 @@ export default function ChatComponent({
 						// set cites placeholder immediately
 						setMessages(m => {
 							const next = [...m];
-							next[idx] = { ...next[idx], cites: citations };
+							next[idx] = {...next[idx], cites: citations};
 							return next;
 						});
 					} else if (evt.type === 'token') {
 						const token: string = evt.value;
 						setMessages(m => {
 							const next = [...m];
-							next[idx] = { ...next[idx], text: (next[idx].text || '') + token };
+							next[idx] = {...next[idx], text: (next[idx].text || '') + token};
 							return next;
 						});
 					} else if (evt.type === 'error') {
 						setMessages(m => {
 							const next = [...m];
-							next[idx] = { ...next[idx], role: 'assistant', text: `Error: ${evt.message}` } as Msg;
+							next[idx] = {...next[idx], role: 'assistant', text: `Error: ${evt.message}`} as Msg;
 							return next;
 						});
+						// Reset Turnstile and clear token on streaming error
+						turnstile.reset();
+						setTurnstileToken(null);
 					} else if (evt.type === 'done') {
 						// no-op
 					}
@@ -128,6 +136,10 @@ export default function ChatComponent({
 		}
 
 		setLoading(false);
+		
+		// Reset Turnstile and clear token after API call completes
+		turnstile.reset();
+		setTurnstileToken(null);
 	}
 
 	// Auto scroll to bottom on messages change
@@ -147,14 +159,14 @@ export default function ChatComponent({
 			setShowScrollToBottom(!atBottom);
 		};
 		onScroll();
-		viewport.addEventListener('scroll', onScroll, { passive: true } as any);
+		viewport.addEventListener('scroll', onScroll, {passive: true} as any);
 		return () => viewport.removeEventListener('scroll', onScroll as any);
 	}, []);
 
 	function scrollToBottom() {
 		const viewport = getViewportEl();
 		if (!viewport) return;
-		viewport.scrollTo({ top: viewport.scrollHeight, behavior: 'smooth' });
+		viewport.scrollTo({top: viewport.scrollHeight, behavior: 'smooth'});
 	}
 
 	function handlePromptSelect(prompt: string) {
@@ -181,98 +193,101 @@ export default function ChatComponent({
 			{showTitle && (
 				<div className="flex flex-col">
 					<div className="flex items-center gap-2">
-					<Sparkles />
-					<h2 className="text-2xl font-semibold tracking-tight ">Ask about me...</h2>
+						<Sparkles/>
+						<h2 className="text-2xl font-semibold tracking-tight ">Ask about me...</h2>
 					</div>
-					<p className="text-sm text-muted-foreground">I built an AI feature to answer questions about my experience and myself—try it!</p>
+					<p className="text-sm text-muted-foreground">I built an AI feature to answer questions about my
+						experience and myself—try it!</p>
 				</div>
 			)}
 
 			<div className="flex-1 flex flex-col min-h-0 pt-2">
 				{messages.length > 0 && (
-				<div className="rounded-xl border bg-background p-3 relative flex-1 flex flex-col min-h-0">
-					<div ref={scrollRef} className="flex-1 min-h-0">
-						<ScrollArea className="h-[60vh] pr-1">
-							<div className="space-y-3 py-1">
-								<AnimatePresence>
-									{messages.map((m, i) => (
-										<motion.div
-											key={i}
-											layout
-											initial={{ opacity: 0, y: 8 }}
-											animate={{ opacity: 1, y: 0 }}
-										exit={{ opacity: 0, y: -8 }}
-											transition={{ type: 'spring', stiffness: 300, damping: 24 }}
-										>
-											<ChatMessage role={m.role} text={m.text} cites={m.cites} ts={m.ts} />
-										</motion.div>
-									))}
-								</AnimatePresence>
-							</div>
-						</ScrollArea>
-					</div>
+					<div className="rounded-xl border bg-background p-3 relative flex-1 flex flex-col min-h-0">
+						<div ref={scrollRef} className="flex-1 min-h-0">
+							<ScrollArea className="h-[60vh] pr-1">
+								<div className="space-y-3 py-1">
+									<AnimatePresence>
+										{messages.map((m, i) => (
+											<motion.div
+												key={i}
+												layout
+												initial={{opacity: 0, y: 8}}
+												animate={{opacity: 1, y: 0}}
+												exit={{opacity: 0, y: -8}}
+												transition={{type: 'spring', stiffness: 300, damping: 24}}
+											>
+												<ChatMessage role={m.role} text={m.text} cites={m.cites} ts={m.ts}/>
+											</motion.div>
+										))}
+									</AnimatePresence>
+								</div>
+							</ScrollArea>
+						</div>
 
-					<AnimatePresence>
-						{showScrollToBottom && (
-							<motion.button
-								type="button"
-								onClick={scrollToBottom}
-								className="absolute bottom-3 right-3 rounded-full border bg-background/80 backdrop-blur px-3 py-1.5 text-xs shadow-sm hover:bg-background"
-								initial={{ opacity: 0, y: 6 }}
-								animate={{ opacity: 1, y: 0 }}
-							exit={{ opacity: 0, y: 6 }}
-								transition={{ type: 'spring', stiffness: 300, damping: 24 }}
-								aria-label="Scroll to bottom"
-							>
-								Jump to latest
-							</motion.button>
-						)}
-					</AnimatePresence>
-				</div>
+						<AnimatePresence>
+							{showScrollToBottom && (
+								<motion.button
+									type="button"
+									onClick={scrollToBottom}
+									className="absolute bottom-3 right-3 rounded-full border bg-background/80 backdrop-blur px-3 py-1.5 text-xs shadow-sm hover:bg-background"
+									initial={{opacity: 0, y: 6}}
+									animate={{opacity: 1, y: 0}}
+									exit={{opacity: 0, y: 6}}
+									transition={{type: 'spring', stiffness: 300, damping: 24}}
+									aria-label="Scroll to bottom"
+								>
+									Jump to latest
+								</motion.button>
+							)}
+						</AnimatePresence>
+					</div>
 				)}
 
 				<div className="mt-4">
-				{showScopeButtons && (
-					<div className="flex gap-2 mb-2">
-						{(['all','resume','about'] as const).map(s => (
-							<button
-								key={s}
-								onClick={() => setScope(s)}
-								className={`px-3 py-1 rounded-md border ${scope===s?'bg-primary text-primary-foreground':'bg-background'}`}
-							>
-								{s[0].toUpperCase()+s.slice(1)}
-							</button>
-						))}
-					</div>
-				)}
-				
-				<ChatInput 
-					onSend={ask} 
-					value={inputValue}
-					onValueChange={setInputValue}
-					disabled={!turnstileToken || loading}
-				/>
-				
-				{/* Turnstile Widget */}
-				<div className="mt-3 flex justify-center">
-					<TurnstileWidget 
-						onVerify={handleTurnstileVerify}
-						onError={handleTurnstileError}
-						onExpire={handleTurnstileExpire}
+					{showScopeButtons && (
+						<div className="flex gap-2 mb-2">
+							{(['all', 'resume', 'about'] as const).map(s => (
+								<button
+									key={s}
+									onClick={() => setScope(s)}
+									className={`px-3 py-1 rounded-md border ${scope === s ? 'bg-primary text-primary-foreground' : 'bg-background'}`}
+								>
+									{s[0].toUpperCase() + s.slice(1)}
+								</button>
+							))}
+						</div>
+					)}
+
+					<ChatInput
+						onSend={ask}
+						value={inputValue}
+						onValueChange={setInputValue}
+						disabled={!turnstileToken || loading}
 					/>
-				</div>
-				
-				{/* Error message */}
-				{turnstileError && (
-					<div className="mt-2 text-sm text-red-600 text-center">
-						{turnstileError}
+
+					{/* Turnstile Widget */}
+					<div className="mt-3 flex justify-center">
+						<Turnstile
+							sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
+							onVerify={handleTurnstileVerify}
+							onError={handleTurnstileError}
+							onExpire={handleTurnstileExpire}
+							refreshExpired="auto"
+						/>
 					</div>
-				)}
-				
-				{messages.length === 0 && (
-					<PromptChips onPromptSelect={handlePromptSelect} />
-				)}
-			</div>
+
+					{/* Error message */}
+					{turnstileError && (
+						<div className="mt-2 text-sm text-red-600 text-center">
+							{turnstileError}
+						</div>
+					)}
+
+					{messages.length === 0 && (
+						<PromptChips onPromptSelect={handlePromptSelect}/>
+					)}
+				</div>
 			</div>
 		</div>
 	);
