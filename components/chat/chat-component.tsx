@@ -8,21 +8,20 @@ import PromptChips from '@/components/chat/prompt-chips';
 import {Sparkles} from 'lucide-react';
 import {ScrollArea} from '@/components/ui/scroll-area';
 import Turnstile, {useTurnstile} from "react-turnstile";
+import {Cite} from '@/components/chat/answer-card';
 
-type Msg = { role: 'user' | 'assistant'; text: string; cites?: any[]; ts: number };
+type Msg = { role: 'user' | 'assistant'; text: string; cites?: Cite[]; ts: number };
 
 interface ChatComponentProps {
 	className?: string;
 	showTitle?: boolean;
 	showScopeButtons?: boolean;
-	showTip?: boolean;
 }
 
 export default function ChatComponent({
 	                                      className = "",
 	                                      showTitle = true,
-	                                      showScopeButtons = true,
-	                                      showTip = true
+	                                      showScopeButtons = true
                                       }: ChatComponentProps) {
 	const [messages, setMessages] = useState<Msg[]>([]);
 	const [loading, setLoading] = useState(false);
@@ -87,7 +86,7 @@ export default function ChatComponent({
 		const reader = res.body.getReader();
 		const decoder = new TextDecoder('utf-8');
 		let buffer = '';
-		let citations: any[] | undefined;
+		let citations: Cite[] | undefined;
 
 		while (true) {
 			const {value, done} = await reader.read();
@@ -159,8 +158,8 @@ export default function ChatComponent({
 			setShowScrollToBottom(!atBottom);
 		};
 		onScroll();
-		viewport.addEventListener('scroll', onScroll, {passive: true} as any);
-		return () => viewport.removeEventListener('scroll', onScroll as any);
+		viewport.addEventListener('scroll', onScroll, {passive: true});
+		return () => viewport.removeEventListener('scroll', onScroll);
 	}, []);
 
 	function scrollToBottom() {
@@ -269,7 +268,7 @@ export default function ChatComponent({
 					{/* Turnstile Widget */}
 					<div className="mt-3 flex justify-center">
 						<Turnstile
-							sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
+							sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ""}
 							onVerify={handleTurnstileVerify}
 							onError={handleTurnstileError}
 							onExpire={handleTurnstileExpire}

@@ -191,9 +191,9 @@ export default function LandingPage() {
 										animate={{opacity: 1, y: 0}}
 										transition={{duration: 0.6, delay: 1.6}}
 									>
-										I'm a full-stack software engineer who loves building products that blend
+										I&apos;m a full-stack software engineer who loves building products that blend
 										thoughtful design with powerful technology.
-										Over the past few years I've implemented major UI and UX improvements,
+										Over the past few years I&apos;ve implemented major UI and UX improvements,
 										engineered core systems that drove over $130,000 in first-year ARR, and helped
 										teams adopt cutting-edge AI tools.
 									</motion.p>
