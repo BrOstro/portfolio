@@ -1,0 +1,13 @@
+﻿I have always been fascinated by computers. Growing up, I would watch my dad play early PC games or sneak in a few rounds of Spider Solitaire, completely absorbed in what was happening on the screen. What really captured me was not just playing the games but wondering how everything worked behind the scenes. That curiosity has been a constant thread in my life.
+
+When I was seven, my friends and I were hooked on a game called RuneScape. It was a simple point and click MMORPG that took hundreds of hours to build up your character. One day I stumbled across a website that claimed it had a program that could play the game for you. I set it up and watched in amazement as my character leveled up without me. That was the first time I felt the pull of automation and problem solving.
+
+It did not take long for me to see that the bot had limits. It could not handle every part of the game and there were gaps nobody had filled yet. Rather than wait, I decided to learn how to build my own scripts. I had no experience with Java, but I taught myself enough to write a basic script. It took me far longer than it should have, but when I watched my character perform actions I had written myself, I felt a rush I will never forget.
+
+That experience was the real start of my programming journey. Writing scripts for RuneScape turned into a genuine love of building tools, understanding systems, and writing better code. Eventually I was creating scripts good enough to share publicly and even sell. That early experience gave me not just technical skills but a sense of entrepreneurship and the excitement of solving problems for others.
+
+Today that same passion drives me well beyond games. I am genuinely passionate about technology, programming, and solving complex problems, especially those with real world impact. Whether I am designing scalable systems, automating workflows, or developing applications that make people’s lives easier, I thrive on identifying pain points and creating thoughtful solutions.
+
+Programming to me is more than a skill. It is a way of thinking. It is curiosity, creativity, and perseverance. It is about understanding how things work so you can make them work better. At its best, it is about using technology to solve meaningful problems and improve the world around us.
+
+When I am not coding you will usually find me at the gym lifting weights or climbing. I love sitting down with friends for board games, especially Magic: The Gathering. I also spend time producing music and teaching myself to play piano.

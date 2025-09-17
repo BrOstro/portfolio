@@ -1,26 +1,136 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  --radius: 0.625rem;
+  /* Catppuccin Latte (Light) */
+  --background: #eff1f5; /* base */
+  --foreground: #4c4f69; /* text */
+  --card: #ffffff;
+  --card-foreground: #4c4f69;
+  --popover: #ffffff;
+  --popover-foreground: #4c4f69;
+  --primary: #7287fd; /* lavender */
+  --primary-foreground: #eff1f5; /* on-primary */
+  --secondary: #ccd0da; /* surface0 */
+  --secondary-foreground: #4c4f69;
+  --muted: #ccd0da; /* surface0 */
+  --muted-foreground: #6c6f85; /* subtext0 */
+  --accent: #fe640b; /* peach */
+  --accent-foreground: #eff1f5;
+  --destructive: #d20f39; /* red */
+  --border: #ccd0da; /* surface0 */
+  --input: #ccd0da; /* surface0 */
+  --ring: #7287fd; /* lavender */
+  /* Simple chart palette inspired by Catppuccin */
+  --chart-1: #7287fd; /* lavender */
+  --chart-2: #40a02b; /* green */
+  --chart-3: #df8e1d; /* yellow */
+  --chart-4: #dd7878; /* maroon */
+  --chart-5: #ea76cb; /* pink */
+  /* Sidebar */
+  --sidebar: #ffffff;
+  --sidebar-foreground: #4c4f69;
+  --sidebar-primary: #7287fd;
+  --sidebar-primary-foreground: #eff1f5;
+  --sidebar-accent: #ccd0da;
+  --sidebar-accent-foreground: #4c4f69;
+  --sidebar-border: #e6e9ef; /* mantle-ish */
+  --sidebar-ring: #7287fd;
+}
+
+.dark {
+  /* Catppuccin Mocha (Dark) */
+  --background: #1e1e2e; /* base */
+  --foreground: #cdd6f4; /* text */
+  --card: #181825; /* mantle */
+  --card-foreground: #cdd6f4;
+  --popover: #181825;
+  --popover-foreground: #cdd6f4;
+  --primary: #b4befe; /* lavender */
+  --primary-foreground: #1e1e2e;
+  --secondary: #313244; /* surface0 */
+  --secondary-foreground: #cdd6f4;
+  --muted: #313244; /* surface0 */
+  --muted-foreground: #a6adc8; /* subtext0 */
+  --accent: #fab387; /* peach */
+  --accent-foreground: #1e1e2e;
+  --destructive: #f38ba8; /* red */
+  --border: #313244; /* surface0 */
+  --input: #313244; /* surface0 */
+  --ring: #b4befe; /* lavender */
+  --chart-1: #b4befe; /* lavender */
+  --chart-2: #a6e3a1; /* green */
+  --chart-3: #f9e2af; /* yellow */
+  --chart-4: #eba0ac; /* maroon */
+  --chart-5: #f5c2e7; /* pink */
+  --sidebar: #181825; /* mantle */
+  --sidebar-foreground: #cdd6f4;
+  --sidebar-primary: #b4befe;
+  --sidebar-primary-foreground: #1e1e2e;
+  --sidebar-accent: #313244;
+  --sidebar-accent-foreground: #cdd6f4;
+  --sidebar-border: #45475a; /* surface1 */
+  --sidebar-ring: #b4befe;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Animated gradient utilities for decorative borders */
+@keyframes gradient-rotate {
+  to { transform: rotate(360deg); }
+}
+
+.animate-gradient-spin {
+  animation: gradient-rotate 12s linear infinite;
+  will-change: transform;
 }

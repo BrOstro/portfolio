@@ -1,36 +1,98 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# My Portfolio & AI Chat
+
+This is my personal portfolio website, built with Next.js, TypeScript, and Tailwind CSS. It features an AI-powered chat assistant that can answer questions about my experience and skills. The chat is powered by a Retrieval-Augmented Generation (RAG) system that uses my personal documents as a knowledge base.
+
+## Features
+
+- **AI-Powered Chat**: Interactive chat interface powered by OpenAI GPT models.
+- **RAG (Retrieval-Augmented Generation)**: Context-aware responses based on my personal documents (resume, about me, etc.).
+- **CAPTCHA Protection**: Cloudflare Turnstile integration to prevent abuse and spam.
+- **Rate Limiting**: Built-in protection against API abuse to ensure fair usage.
+- **Responsive Design**: Modern and fully responsive UI with smooth animations, built with Tailwind CSS and ShadCN UI.
+- **PostgreSQL with pgvector**: Efficiently stores and queries vector embeddings for the RAG system.
+
+## Technology Stack
+
+- **Framework**: [Next.js](https://nextjs.org/)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **UI Components**: [ShadCN UI](https://ui.shadcn.com/)
+- **ORM**: [Drizzle ORM](https://orm.drizzle.team/)
+- **Database**: [PostgreSQL](https://www.postgresql.org/) with [pgvector](https://github.com/pgvector/pgvector)
+- **AI**: [OpenAI API](https://beta.openai.com/docs/)
+- **CAPTCHA**: [Cloudflare Turnstile](https://www.cloudflare.com/products/turnstile/)
 
 ## Getting Started
 
-First, run the development server:
+Follow these steps to get the project up and running on your local machine.
+
+### 1. Prerequisites
+
+- [Node.js](https://nodejs.org/en/)
+- [pnpm](https://pnpm.io/)
+
+### 2. Clone the Repository
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/brOstro/portfolio
+cd portfolio
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 3. Install Dependencies
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+pnpm install
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 4. Set Up Environment Variables
 
-## Learn More
+Create a `.env` file in the root of the project and add the following environment variables.
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+# OpenAI Configuration
+OPENAI_API_KEY=your_openai_api_key_here
+RAG_CHAT_MODEL=gpt-5-nano
+RAG_EMBED_MODEL=text-embedding-3-small
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Cloudflare Turnstile (for CAPTCHA protection)
+# You can use the test key "1x00000000000000000000AA" for local development
+TURNSTILE_SECRET_KEY=1x00000000000000000000AA
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# Database
+DATABASE_URL=your_postgres_connection_string
+```
 
-## Deploy on Vercel
+### 5. Run Database Migrations
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+This will create the necessary tables in your database.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+pnpm run migrate:push
+```
+
+### 6. Ingest Data
+
+This script will read your personal documents (in the `public/content` directory), generate embeddings using the OpenAI API, and store them in the database.
+
+```bash
+pnpm run ingest
+```
+
+### 7. Run the Development Server
+
+```bash
+pnpm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) in your browser to see the result.
+
+## Scripts
+
+- `pnpm dev`: Starts the development server.
+- `pnpm build`: Creates a production build of the application.
+- `pnpm start`: Starts the production server.
+- `pnpm lint`: Lints the codebase using ESLint.
+- `pnpm migrate:generate`: Generates a new database migration based on your schema changes.
+- `pnpm migrate:push`: Pushes the latest migrations to your database.
+- `pnpm ingest`: Ingests your personal documents into the database.
+s deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
