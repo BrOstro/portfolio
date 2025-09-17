@@ -8,7 +8,7 @@
 		"start": "next start",
 		"lint": "eslint",
 		"migrate:generate": "drizzle-kit generate",
-		"migrate:push": "drizzle-kit push",
+		"migrate:push": "drizzle-kit push --force",
 		"ingest": "tsx scripts/ingest-batch.ts",
 		"postinstall": "pnpm run migrate:push && pnpm run ingest"
 	},
