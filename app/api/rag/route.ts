@@ -33,7 +33,7 @@ import { synthesizeAnswer } from '@/lib/answer';
  */
 export async function POST(req: Request) {
 	try {
-		const { query, slug = 'resume', topK = 6 } = await req.json();
+		const { query, slug = 'resume'} = await req.json();
 		
 		// Get client identifier for rate limiting
 		const clientId = getClientIdentifier(req);
@@ -47,7 +47,7 @@ export async function POST(req: Request) {
 
 		return NextResponse.json({
 			answer,
-			citations: hits.map((h, i) => ({ chunkIndex: h.chunk_index, preview: h.content.slice(0, 200), similarity: h.similarity })),
+			citations: hits.map((h) => ({ chunkIndex: h.chunk_index, preview: h.content.slice(0, 200), similarity: h.similarity })),
 		});
 	} catch (error) {
 		console.error('RAG API error:', error);
