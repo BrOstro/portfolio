@@ -7,7 +7,6 @@ import ChatMessage from '@/components/chat/chat-message';
 import PromptChips from '@/components/chat/prompt-chips';
 import {Sparkles} from 'lucide-react';
 import {ScrollArea} from '@/components/ui/scroll-area';
-import Turnstile, {useTurnstile} from "react-turnstile";
 import {Cite} from '@/components/chat/answer-card';
 
 type Msg = { role: 'user' | 'assistant'; text: string; cites?: Cite[]; ts: number };
@@ -27,9 +26,6 @@ export default function ChatComponent({
 	const [loading, setLoading] = useState(false);
 	const [scope, setScope] = useState<'all' | 'resume' | 'about'>('all');
 	const [inputValue, setInputValue] = useState('');
-	const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
-	const [turnstileError, setTurnstileError] = useState<string | null>(null);
-	const turnstile = useTurnstile();
 
 	// Auto-scroll container ref (wrapper around ScrollArea)
 	const scrollRef = useRef<HTMLDivElement | null>(null);
@@ -42,13 +38,6 @@ export default function ChatComponent({
 	}
 
 	async function ask(query: string) {
-		// Check if Turnstile token is available
-		if (!turnstileToken) {
-			setTurnstileError('Please complete the CAPTCHA verification');
-			return;
-		}
-
-		setTurnstileError(null);
 		setMessages(m => [...m, {role: 'user', text: query, ts: Date.now()}]);
 		setLoading(true);
 
@@ -58,28 +47,18 @@ export default function ChatComponent({
 
 		const res = await fetch('/api/rag/stream', {
 			method: 'POST',
-			body: JSON.stringify({query, scope, turnstileToken}),
+			body: JSON.stringify({query, scope}),
 		});
 
 		if (!res.ok || !res.body) {
 			setLoading(false);
-			const errorData = await res.json().catch(() => ({}));
-
-			// Handle Turnstile verification failure
-			if (res.status === 400 && errorData.code === 'TURNSTILE_VERIFICATION_FAILED') {
-				setTurnstileToken(null);
-				setTurnstileError('CAPTCHA verification failed. Please try again.');
-			}
 
 			setMessages(m => {
 				const next = [...m];
 				next[idx] = {...next[idx], role: 'assistant', text: 'Sorry, something went wrong.'} as Msg;
 				return next;
 			});
-			
-			// Reset Turnstile and clear token after error
-			turnstile.reset();
-			setTurnstileToken(null);
+
 			return;
 		}
 
@@ -122,9 +101,6 @@ export default function ChatComponent({
 							next[idx] = {...next[idx], role: 'assistant', text: `Error: ${evt.message}`} as Msg;
 							return next;
 						});
-						// Reset Turnstile and clear token on streaming error
-						turnstile.reset();
-						setTurnstileToken(null);
 					} else if (evt.type === 'done') {
 						// no-op
 					}
@@ -135,10 +111,6 @@ export default function ChatComponent({
 		}
 
 		setLoading(false);
-		
-		// Reset Turnstile and clear token after API call completes
-		turnstile.reset();
-		setTurnstileToken(null);
 	}
 
 	// Auto scroll to bottom on messages change
@@ -170,21 +142,6 @@ export default function ChatComponent({
 
 	function handlePromptSelect(prompt: string) {
 		setInputValue(prompt);
-	}
-
-	function handleTurnstileVerify(token: string) {
-		setTurnstileToken(token);
-		setTurnstileError(null);
-	}
-
-	function handleTurnstileError() {
-		setTurnstileToken(null);
-		setTurnstileError('CAPTCHA verification failed. Please try again.');
-	}
-
-	function handleTurnstileExpire() {
-		setTurnstileToken(null);
-		setTurnstileError('CAPTCHA expired. Please verify again.');
 	}
 
 	return (
@@ -262,26 +219,8 @@ export default function ChatComponent({
 						onSend={ask}
 						value={inputValue}
 						onValueChange={setInputValue}
-						disabled={!turnstileToken || loading}
+						disabled={loading}
 					/>
-
-					{/* Turnstile Widget */}
-					<div className="mt-3 flex justify-center">
-						<Turnstile
-							sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ""}
-							onVerify={handleTurnstileVerify}
-							onError={handleTurnstileError}
-							onExpire={handleTurnstileExpire}
-							refreshExpired="auto"
-						/>
-					</div>
-
-					{/* Error message */}
-					{turnstileError && (
-						<div className="mt-2 text-sm text-red-600 text-center">
-							{turnstileError}
-						</div>
-					)}
 
 					{messages.length === 0 && (
 						<PromptChips onPromptSelect={handlePromptSelect}/>

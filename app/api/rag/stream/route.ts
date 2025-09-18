@@ -2,7 +2,6 @@ import {NextRequest} from 'next/server';
 import OpenAI from 'openai';
 import {retrieveSimilar, getClientIdentifier, RetrieverError} from '@/lib/retriever';
 import {buildPrompt} from '@/lib/answer';
-import {verifyTurnstileToken, getClientIP} from '@/lib/turnstile';
 
 const openai = new OpenAI({apiKey: process.env.OPENAI_API_KEY!});
 
@@ -23,8 +22,6 @@ const openai = new OpenAI({apiKey: process.env.OPENAI_API_KEY!});
  *                 type: string
  *               scope:
  *                 type: string
- *               turnstileToken:
- *                 type: string
  *     responses:
  *       200:
  *         description: Success
@@ -37,33 +34,7 @@ const openai = new OpenAI({apiKey: process.env.OPENAI_API_KEY!});
  */
 export async function POST(req: NextRequest) {
 	try {
-		const { query, scope = 'all', turnstileToken } = await req.json();
-		
-		// Verify Turnstile token
-		if (!turnstileToken) {
-			return new Response(JSON.stringify({
-				type: 'error',
-				message: 'CAPTCHA verification required',
-				code: 'TURNSTILE_MISSING'
-			}), {
-				status: 400,
-				headers: { 'Content-Type': 'application/json' }
-			});
-		}
-
-		const clientIP = getClientIP(req);
-		const isValidToken = await verifyTurnstileToken(turnstileToken, clientIP);
-		
-		if (!isValidToken) {
-			return new Response(JSON.stringify({
-				type: 'error',
-				message: 'CAPTCHA verification failed',
-				code: 'TURNSTILE_VERIFICATION_FAILED'
-			}), {
-				status: 400,
-				headers: { 'Content-Type': 'application/json' }
-			});
-		}
+		const { query, scope = 'all' } = await req.json();
 		
 		// Get client identifier for rate limiting
 		const clientId = getClientIdentifier(req);
