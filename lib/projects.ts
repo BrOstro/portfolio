@@ -16,7 +16,7 @@ export const projects: Project[] = [
 		description: "A modern portfolio website with AI-powered chat functionality using RAG (Retrieval-Augmented Generation) to answer questions about my experience and projects.",
 		image: "/projects/portfolio.png",
 		techStack: ["React", "Next.js", "TypeScript", "Tailwind CSS", "PostgreSQL", "Drizzle", "Neon", "RAG", "OpenAI", "Motion"],
-		githubUrl: "https://github.com/brendanostrom/portfolio",
+		githubUrl: "https://github.com/brostro/portfolio",
 		liveUrl: "https://brendanostrom.com"
 	},
 	{
