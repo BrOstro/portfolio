@@ -34,6 +34,23 @@ const openai = new OpenAI({apiKey: process.env.OPENAI_API_KEY!});
  */
 export async function POST(req: NextRequest) {
 	try {
+		const origin = req.headers.get('origin') || '';
+		const host = req.headers.get('host') || '';
+		const allowedHosts = new Set([
+			host,
+			process.env.NEXT_PUBLIC_APP_HOST ?? '', // optional explicit host
+		]);
+		if (origin) {
+			try {
+				const url = new URL(origin);
+				if (!allowedHosts.has(url.host)) {
+					return new Response(JSON.stringify({ type: 'error', message: 'Forbidden origin' }), { status: 403, headers: { 'Content-Type': 'application/json' } });
+				}
+			} catch {
+				return new Response(JSON.stringify({ type: 'error', message: 'Forbidden origin' }), { status: 403, headers: { 'Content-Type': 'application/json' } });
+			}
+		}
+
 		const { query, scope = 'all' } = await req.json();
 		
 		// Get client identifier for rate limiting
@@ -89,6 +106,10 @@ export async function POST(req: NextRequest) {
 				'Content-Type': 'application/x-ndjson; charset=utf-8',
 				'Cache-Control': 'no-cache, no-transform',
 				Connection: 'keep-alive',
+				'X-Content-Type-Options': 'nosniff',
+				'X-Frame-Options': 'DENY',
+				'X-XSS-Protection': '1; mode=block',
+				'Referrer-Policy': 'strict-origin-when-cross-origin',
 			},
 		});
 	} catch (error) {

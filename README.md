@@ -6,7 +6,6 @@ This is my personal portfolio website, built with Next.js, TypeScript, and Tailw
 
 - **AI-Powered Chat**: Interactive chat interface powered by OpenAI GPT models.
 - **RAG (Retrieval-Augmented Generation)**: Context-aware responses based on my personal documents (resume, about me, etc.).
-- **CAPTCHA Protection**: Cloudflare Turnstile integration to prevent abuse and spam.
 - **Rate Limiting**: Built-in protection against API abuse to ensure fair usage.
 - **Responsive Design**: Modern and fully responsive UI with smooth animations, built with Tailwind CSS and ShadCN UI.
 - **PostgreSQL with pgvector**: Efficiently stores and queries vector embeddings for the RAG system.
@@ -20,7 +19,6 @@ This is my personal portfolio website, built with Next.js, TypeScript, and Tailw
 - **ORM**: [Drizzle ORM](https://orm.drizzle.team/)
 - **Database**: [PostgreSQL](https://www.postgresql.org/) with [pgvector](https://github.com/pgvector/pgvector)
 - **AI**: [OpenAI API](https://beta.openai.com/docs/)
-- **CAPTCHA**: [Cloudflare Turnstile](https://www.cloudflare.com/products/turnstile/)
 
 ## Getting Started
 
@@ -53,10 +51,6 @@ Create a `.env` file in the root of the project and add the following environmen
 OPENAI_API_KEY=your_openai_api_key_here
 RAG_CHAT_MODEL=gpt-5-nano
 RAG_EMBED_MODEL=text-embedding-3-small
-
-# Cloudflare Turnstile (for CAPTCHA protection)
-# You can use the test key "1x00000000000000000000AA" for local development
-TURNSTILE_SECRET_KEY=1x00000000000000000000AA
 
 # Database
 DATABASE_URL=your_postgres_connection_string

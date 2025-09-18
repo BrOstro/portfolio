@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { retrieveSimilar, getClientIdentifier, RetrieverError } from '@/lib/retriever';
 import { synthesizeAnswer } from '@/lib/answer';
 
@@ -31,8 +31,26 @@ import { synthesizeAnswer } from '@/lib/answer';
  *       500:
  *         description: Internal server error
  */
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
 	try {
+		// Enforce same-origin requests
+		const origin = req.headers.get('origin') || '';
+		const host = req.headers.get('host') || '';
+		const allowedHosts = new Set([
+			host,
+			process.env.NEXT_PUBLIC_APP_HOST ?? '',
+		]);
+		if (origin) {
+			try {
+				const url = new URL(origin);
+				if (!allowedHosts.has(url.host)) {
+					return NextResponse.json({ error: 'Forbidden origin' }, { status: 403 });
+				}
+			} catch {
+				return NextResponse.json({ error: 'Forbidden origin' }, { status: 403 });
+			}
+		}
+
 		const { query, slug = 'resume'} = await req.json();
 		
 		// Get client identifier for rate limiting
@@ -48,6 +66,13 @@ export async function POST(req: Request) {
 		return NextResponse.json({
 			answer,
 			citations: hits.map((h) => ({ chunkIndex: h.chunk_index, preview: h.content.slice(0, 200), similarity: h.similarity })),
+		}, {
+			headers: {
+				'X-Content-Type-Options': 'nosniff',
+				'X-Frame-Options': 'DENY',
+				'X-XSS-Protection': '1; mode=block',
+				'Referrer-Policy': 'strict-origin-when-cross-origin',
+			}
 		});
 	} catch (error) {
 		console.error('RAG API error:', error);
