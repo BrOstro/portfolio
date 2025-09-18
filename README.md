@@ -18,7 +18,7 @@ This is my personal portfolio website, built with Next.js, TypeScript, and Tailw
 - **UI Components**: [ShadCN UI](https://ui.shadcn.com/)
 - **ORM**: [Drizzle ORM](https://orm.drizzle.team/)
 - **Database**: [PostgreSQL](https://www.postgresql.org/) with [pgvector](https://github.com/pgvector/pgvector)
-- **AI**: [OpenAI API](https://beta.openai.com/docs/)
+- **AI**: [OpenAI API](https://platform.openai.com/docs/overview)
 
 ## Getting Started
 
@@ -89,4 +89,3 @@ Open [http://localhost:3000](http://localhost:3000) in your browser to see the r
 - `pnpm migrate:generate`: Generates a new database migration based on your schema changes.
 - `pnpm migrate:push`: Pushes the latest migrations to your database.
 - `pnpm ingest`: Ingests your personal documents into the database.
-s deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
