@@ -30,7 +30,7 @@ export default function FeaturedProjectSection({delay = 2.6, className = ""}: Fe
 				Featured Project
 			</motion.h3>
 
-			<ProjectCard {...featured} />
+			<ProjectCard {...featured} featured={false} />
 		</motion.div>
 	);
 }

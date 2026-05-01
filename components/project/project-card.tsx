@@ -3,7 +3,10 @@
 import {motion} from 'motion/react';
 import {Card, CardContent, CardHeader, CardTitle, CardDescription} from '@/components/ui/card';
 import {Badge} from '@/components/ui/badge';
+import {Dialog, DialogContent, DialogTitle} from '@/components/ui/dialog';
+import {Play} from 'lucide-react';
 import Image from 'next/image';
+import {useState} from 'react';
 
 interface ProjectCardProps {
 	name: string;
@@ -13,6 +16,7 @@ interface ProjectCardProps {
 	githubUrl?: string;
 	liveUrl?: string;
 	featured?: boolean;
+	video?: string;
 	className?: string;
 }
 
@@ -37,8 +41,51 @@ export default function ProjectCard({
 	                                    githubUrl,
 	                                    liveUrl,
 	                                    featured = false,
+	                                    video,
 	                                    className = ""
                                     }: ProjectCardProps) {
+	const [videoOpen, setVideoOpen] = useState(false);
+
+	const btnBase = "flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium rounded-md border transition-colors duration-200";
+	const btnOutline = `${btnBase} border-border text-muted-foreground hover:text-foreground hover:bg-accent`;
+	const btnPrimary = `${btnBase} border-primary bg-primary text-primary-foreground hover:bg-primary/90`;
+
+	const watchDemoButton = video && (
+		<motion.button
+			onClick={() => setVideoOpen(true)}
+			className={btnOutline}
+			whileHover={{scale: 1.02}}
+			whileTap={{scale: 0.98}}
+		>
+			<Play className="w-4 h-4"/> Watch Demo
+		</motion.button>
+	);
+
+	const codeButton = (url: string) => (
+		<motion.a href={url} target="_blank" rel="noopener noreferrer"
+		          className={btnOutline}
+		          whileHover={{scale: 1.02}} whileTap={{scale: 0.98}}>
+			<GithubIcon/> Code
+		</motion.a>
+	);
+
+	const liveDemoButton = (url: string) => (
+		<motion.a href={url} target="_blank" rel="noopener noreferrer"
+		          className={btnPrimary}
+		          whileHover={{scale: 1.02}} whileTap={{scale: 0.98}}>
+			<ExternalLinkIcon/> Live Demo
+		</motion.a>
+	);
+
+	const videoModal = video && (
+		<Dialog open={videoOpen} onOpenChange={setVideoOpen}>
+			<DialogContent className="max-w-[90vw] w-[90vw] p-0 overflow-hidden">
+				<DialogTitle className="sr-only">{name} demo video</DialogTitle>
+				<video src={video} controls autoPlay className="w-full max-h-[85vh]" />
+			</DialogContent>
+		</Dialog>
+	);
+
 	if (featured) {
 		return (
 			<motion.div
@@ -81,24 +128,14 @@ export default function ProjectCard({
 								</div>
 							</div>
 							<div className="flex gap-2">
-								{githubUrl && (
-									<motion.a href={githubUrl} target="_blank" rel="noopener noreferrer"
-									          className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors duration-200"
-									          whileHover={{scale: 1.02}} whileTap={{scale: 0.98}}>
-										<GithubIcon/> Code
-									</motion.a>
-								)}
-								{liveUrl && (
-									<motion.a href={liveUrl} target="_blank" rel="noopener noreferrer"
-									          className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 rounded-md transition-colors duration-200"
-									          whileHover={{scale: 1.02}} whileTap={{scale: 0.98}}>
-										<ExternalLinkIcon/> Live Demo
-									</motion.a>
-								)}
+								{watchDemoButton}
+								{githubUrl && codeButton(githubUrl)}
+								{liveUrl && liveDemoButton(liveUrl)}
 							</div>
 						</div>
 					</div>
 				</Card>
+				{videoModal}
 			</motion.div>
 		);
 	}
@@ -159,34 +196,13 @@ export default function ProjectCard({
 					</div>
 
 					<div className="flex gap-2">
-						{githubUrl && (
-							<motion.a
-								href={githubUrl}
-								target="_blank"
-								rel="noopener noreferrer"
-								className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors duration-200"
-								whileHover={{scale: 1.02}}
-								whileTap={{scale: 0.98}}
-							>
-								<GithubIcon/> Code
-							</motion.a>
-						)}
-
-						{liveUrl && (
-							<motion.a
-								href={liveUrl}
-								target="_blank"
-								rel="noopener noreferrer"
-								className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 rounded-md transition-colors duration-200"
-								whileHover={{scale: 1.02}}
-								whileTap={{scale: 0.98}}
-							>
-								<ExternalLinkIcon/> Live Demo
-							</motion.a>
-						)}
+						{watchDemoButton}
+						{githubUrl && codeButton(githubUrl)}
+						{liveUrl && liveDemoButton(liveUrl)}
 					</div>
 				</CardContent>
 			</Card>
+			{videoModal}
 		</motion.div>
 	);
 }

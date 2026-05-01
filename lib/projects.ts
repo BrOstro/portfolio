@@ -8,6 +8,7 @@ export type Project = {
 	githubUrl?: string;
 	liveUrl?: string;
 	featured?: boolean;
+	video?: string;
 };
 
 export const projects: Project[] = [
@@ -17,7 +18,8 @@ export const projects: Project[] = [
 		image: "/projects/ellory.png",
 		techStack: ["LangGraph", "FastAPI", "Next.js", "TypeScript", "Tailwind CSS", "PostgreSQL", "Context7"],
 		githubUrl: "https://github.com/brostro/ellory-next",
-		featured: true
+		featured: true,
+		video: "/projects/ellory.mp4"
 	},
 	{
 		name: "AI-Powered Portfolio",
