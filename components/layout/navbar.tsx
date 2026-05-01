@@ -3,7 +3,7 @@
 import Link from "next/link";
 import {useState} from "react";
 import ThemeToggle from "@/components/core/theme-toggle";
-import {Linkedin, Mail} from "lucide-react";
+import {Github, Linkedin, Mail} from "lucide-react";
 import {Button} from "@/components/ui/button";
 
 export default function Navbar() {
@@ -33,6 +33,19 @@ export default function Navbar() {
 
 				<div className="flex items-center gap-2">
 					<a
+						href="https://github.com/brostro"
+						target="_blank"
+						rel="noopener noreferrer"
+						className="hidden sm:flex rounded-lg hover:bg-accent hover:text-accent-foreground"
+						aria-label="GitHub profile"
+					>
+						<div className="flex items-center">
+							<Button size="icon" variant="outline" className="bg-primary/10 text-primary cursor-pointer">
+								<Github/>
+							</Button>
+						</div>
+					</a>
+					<a
 						href="https://linkedin.com/in/brostro"
 						target="_blank"
 						rel="noopener noreferrer"
@@ -44,7 +57,6 @@ export default function Navbar() {
 								<Linkedin/>
 							</Button>
 						</div>
-
 					</a>
 					<a
 						href="mailto:brendan.ostrom@gmail.com"
@@ -124,6 +136,16 @@ export default function Navbar() {
 								onClick={closeMenu}
 							>
 								Resume
+							</a>
+							<a
+								href="https://github.com/brostro"
+								target="_blank"
+								rel="noopener noreferrer"
+								className="rounded-md px-3 py-2 text-base font-medium text-foreground/90 hover:bg-accent hover:text-accent-foreground"
+								onClick={closeMenu}
+								aria-label="GitHub profile"
+							>
+								GitHub
 							</a>
 							<a
 								href="https://linkedin.com/in/brostro"

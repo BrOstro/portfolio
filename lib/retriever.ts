@@ -272,53 +272,40 @@ export async function retrieveSimilar(
 			}
 		}
 
-		// Resolve documents with parameterized query
-		let docRows;
-		try {
-			if (sanitizedSlugs?.length) {
-				docRows = await db
-					.select({id: documents.id, slug: documents.slug})
-					.from(documents)
-					.where(inArray(documents.slug, sanitizedSlugs));
-			} else {
-				docRows = await db
-					.select({id: documents.id, slug: documents.slug})
-					.from(documents);
-			}
-		} catch (error) {
-			if (LOGGING.LOG_DATABASE_ERRORS) {
-				console.error('Database error while fetching documents:', error);
-			}
-			throw new DatabaseError('Failed to fetch documents', {originalError: error});
-		}
+		// Resolve documents and generate query embedding in parallel
+		const [docRows, embedResult] = await Promise.all([
+			(async () => {
+				try {
+					return sanitizedSlugs?.length
+						? await db.select({id: documents.id, slug: documents.slug}).from(documents).where(inArray(documents.slug, sanitizedSlugs))
+						: await db.select({id: documents.id, slug: documents.slug}).from(documents);
+				} catch (error) {
+					if (LOGGING.LOG_DATABASE_ERRORS) console.error('Database error while fetching documents:', error);
+					throw new DatabaseError('Failed to fetch documents', {originalError: error});
+				}
+			})(),
+			(async () => {
+				try {
+					return await openai.embeddings.create({model: EMBED_MODEL, input: [sanitizedQuery]});
+				} catch (error) {
+					if (LOGGING.LOG_EMBEDDING_ERRORS) console.error('OpenAI embedding error:', error);
+					throw new EmbeddingError('Failed to generate query embedding', {originalError: error});
+				}
+			})(),
+		]);
 
 		if (!docRows.length) {
 			return [];
 		}
 
 		const docs = docRows.map(r => ({id: r.id, slug: r.slug}));
-
-		// Generate embedding
-		let queryEmbedding: number[];
-		try {
-			const {data} = await openai.embeddings.create({
-				model: EMBED_MODEL,
-				input: [sanitizedQuery]
-			});
-			queryEmbedding = data[0].embedding;
-		} catch (error) {
-			if (LOGGING.LOG_EMBEDDING_ERRORS) {
-				console.error('OpenAI embedding error:', error);
-			}
-			throw new EmbeddingError('Failed to generate query embedding', {originalError: error});
-		}
-
+		const queryEmbedding = embedResult.data[0].embedding;
 		const qvec = sql.raw(`'[${queryEmbedding.join(",")}]'::vector`);
-		const gathered: RetrievedChunk[] = [];
 
-		for (const d of docs) {
+		// Process all documents in parallel
+		const perDocResults = await Promise.all(docs.map(async (d) => {
+			const gathered: RetrievedChunk[] = [];
 			try {
-				// Vector candidates for THIS doc with parameterized query
 				const candRows = await db.execute(sql`
                     SELECT e.chunk_index,
                            e.content,
@@ -348,34 +335,47 @@ export async function retrieveSimilar(
 				// Also include a few top candidates to avoid missing an item between windows
 				for (const c of candidates.slice(0, 6)) indexSet.add(c.chunk_index);
 
-				if (indexSet.size === 0) continue;
+				if (indexSet.size === 0) return gathered;
 
-				// Convert index set to array for parameterized query
 				const indexArray = Array.from(indexSet);
 
-				const winRows = await db.execute(sql`
-                    SELECT e.chunk_index,
-                           e.content,
-                           LEAST(1.0, GREATEST(0.0, 1.0 - cosine_distance(e.embedding, ${qvec}))) AS similarity
-                    FROM embeddings e
-                    WHERE e.document_id = ${d.id}
-                      AND e.chunk_index = ANY (${sql.raw(`ARRAY[${indexArray.join(",")}]::int[]`)})
-                    ORDER BY e.chunk_index ASC
-				`);
+				// Reuse already-fetched candidates; only query DB for window chunks not in top-N
+				const candidatesByIndex = new Map(candidates.map(c => [c.chunk_index, c]));
+				const missingIndices = indexArray.filter(i => !candidatesByIndex.has(i));
 
-				for (const r of winRows.rows as DbQueryResult[]) {
-					gathered.push({
-						document_id: d.id,
-						document_slug: d.slug,
-						chunk_index: Number(r.chunk_index),
-						content: String(r.content),
-						similarity: Number(r.similarity),
-					});
+				if (missingIndices.length > 0) {
+					const winRows = await db.execute(sql`
+                        SELECT e.chunk_index,
+                               e.content,
+                               LEAST(1.0, GREATEST(0.0, 1.0 - cosine_distance(e.embedding, ${qvec}))) AS similarity
+                        FROM embeddings e
+                        WHERE e.document_id = ${d.id}
+                          AND e.chunk_index = ANY (${sql.raw(`ARRAY[${missingIndices.join(",")}]::int[]`)})
+                        ORDER BY e.chunk_index ASC
+					`);
+					for (const r of winRows.rows as DbQueryResult[]) {
+						candidatesByIndex.set(Number(r.chunk_index), {
+							document_id: d.id,
+							document_slug: d.slug,
+							chunk_index: Number(r.chunk_index),
+							content: String(r.content),
+							similarity: Number(r.similarity),
+						});
+					}
+				}
+
+				// Emit window chunks in document order
+				for (const idx of indexArray.sort((a, b) => a - b)) {
+					const chunk = candidatesByIndex.get(idx);
+					if (chunk) gathered.push(chunk);
 				}
 			} catch (error) {
 				console.error(`Error processing document ${d.slug}:`, error);
-				}
 			}
+			return gathered;
+		}));
+
+		const gathered = perDocResults.flat();
 
 		// Pack everything into a safe char budget (prioritize by similarity score)
 		gathered.sort((a, b) => b.similarity - a.similarity);

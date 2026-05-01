@@ -12,6 +12,13 @@ export type Project = {
 
 export const projects: Project[] = [
 	{
+		name: "Ellory – Autonomous Multi-Agent AI Engineering System",
+		description: "Ellory is an autonomous multi-agent AI system that takes a high-level product idea and executes a full engineering workflow, from scope and architecture to code generation and review. It combines stateful orchestration, decision loops, and real GitHub integration to simulate how a small engineering team builds software.",
+		image: "/projects/ellory.png",
+		techStack: ["LangGraph", "FastAPI", "Next.js", "TypeScript", "Tailwind CSS", "PostgreSQL", "Context7"],
+		githubUrl: "https://github.com/brostro/ellory-next"
+	},
+	{
 		name: "AI-Powered Portfolio",
 		description: "A modern portfolio website with AI-powered chat functionality using RAG (Retrieval-Augmented Generation) to answer questions about my experience and projects.",
 		image: "/projects/portfolio.png",
