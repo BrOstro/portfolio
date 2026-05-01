@@ -55,7 +55,6 @@ export async function POST(req: NextRequest) {
 		
 		// Get client identifier for rate limiting
 		const clientId = getClientIdentifier(req);
-		console.log('RAG API called with clientId:', clientId);
 		
 		// Convert single slug to array format expected by retrieveSimilar
 		const slugs = Array.isArray(slug) ? slug : [slug];

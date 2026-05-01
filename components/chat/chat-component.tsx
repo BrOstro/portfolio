@@ -207,6 +207,7 @@ export default function ChatComponent({
 								<button
 									key={s}
 									onClick={() => setScope(s)}
+									aria-pressed={scope === s}
 									className={`px-3 py-1 rounded-md border ${scope === s ? 'bg-primary text-primary-foreground' : 'bg-background'}`}
 								>
 									{s[0].toUpperCase() + s.slice(1)}

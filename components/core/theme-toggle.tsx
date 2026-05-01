@@ -32,6 +32,7 @@ export function ThemeToggle() {
 	}
 
 	const iconSize = 18;
+	if (!mounted) return <div className="inline-flex w-[72px] h-[36px] rounded-md border bg-card shadow" />;
 	return (
 		<button
 			aria-label="Toggle theme"
