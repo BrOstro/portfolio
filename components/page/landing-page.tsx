@@ -50,10 +50,11 @@ export default function LandingPage() {
 					transition={{duration: 0.8, delay: 0.6, ease: "easeOut"}}
 					className="max-w-7xl mx-auto relative"
 				>
-					{/* Mobile Layout: Headshot -> Chat -> About */}
+					{/* Mobile Layout: Headshot -> Chat -> Featured -> About */}
 					<div className="lg:hidden space-y-4">
 						<HeadshotCard delay={1.0} />
 						<ChatWrapper delay={1.2} />
+						<FeaturedProjectSection delay={1.6} />
 					</div>
 
 					{/* Desktop Layout: Two Column Grid */}
@@ -71,11 +72,10 @@ export default function LandingPage() {
 							<HeadshotCard delay={1.0} />
 							<AboutSection delay={1.2} />
 							<SkillsSection delay={2.0} />
-							<FeaturedProjectSection delay={2.6} />
-							<QuickLinksSection delay={2.8} />
+							<QuickLinksSection delay={2.6} />
 						</motion.div>
 
-						{/* Right Column - Chat Component */}
+						{/* Right Column - Chat + Featured */}
 						<motion.div
 							initial={{opacity: 0, x: 30}}
 							animate={{opacity: 1, x: 0}}
@@ -83,14 +83,14 @@ export default function LandingPage() {
 							className="space-y-6"
 						>
 							<ChatWrapper delay={1.2} />
+							<FeaturedProjectSection delay={2.6} />
 						</motion.div>
 					</div>
 
-					{/* Mobile About Section - appears after chat */}
+					{/* Mobile About Section - appears after featured */}
 					<div className="lg:hidden space-y-4 mt-4">
 						<AboutSection delay={1.4} />
 						<SkillsSection delay={2.2} />
-						<FeaturedProjectSection delay={2.8} />
 						<QuickLinksSection delay={3.0} />
 					</div>
 				</motion.div>

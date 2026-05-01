@@ -10,9 +10,9 @@ interface FeaturedProjectSectionProps {
 }
 
 export default function FeaturedProjectSection({delay = 2.6, className = ""}: FeaturedProjectSectionProps) {
-	const clogged = projects.find(p => p.liveUrl === 'https://clogged.me');
+	const featured = projects.find(p => p.featured);
 
-	if (!clogged) return null;
+	if (!featured) return null;
 
 	return (
 		<motion.div
@@ -30,7 +30,7 @@ export default function FeaturedProjectSection({delay = 2.6, className = ""}: Fe
 				Featured Project
 			</motion.h3>
 
-			<ProjectCard {...clogged} />
+			<ProjectCard {...featured} />
 		</motion.div>
 	);
 }

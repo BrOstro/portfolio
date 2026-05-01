@@ -51,15 +51,28 @@ export default function ProjectsPage() {
 					</motion.p>
 				</motion.div>
 
-				{/* Featured Projects Section */}
+				{/* Featured Project */}
+				{projects.filter(p => p.featured).map((project) => (
+					<motion.div
+						key={project.name}
+						initial={{opacity: 0, y: 40}}
+						animate={{opacity: 1, y: 0}}
+						transition={{duration: 0.8, delay: 0.6, ease: "easeOut"}}
+						className="mb-10"
+					>
+						<ProjectCard {...project} featured />
+					</motion.div>
+				))}
+
+				{/* All Projects Grid */}
 				<motion.div
 					initial={{opacity: 0, y: 40}}
 					animate={{opacity: 1, y: 0}}
-					transition={{duration: 0.8, delay: 0.6, ease: "easeOut"}}
+					transition={{duration: 0.8, delay: 0.8, ease: "easeOut"}}
 					className="mb-16"
 				>
 					<div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-						{projects.map((project, index) => (
+						{projects.filter(p => !p.featured).map((project, index) => (
 							<motion.div
 								key={project.name}
 								initial={{opacity: 0, y: 20}}

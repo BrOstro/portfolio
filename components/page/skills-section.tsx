@@ -9,25 +9,20 @@ interface SkillsSectionProps {
 
 const skillsData = [
 	{
-		title: 'Frontend',
-		items: ['React', 'Next.js', 'TypeScript', "Vue.js", "Tailwind CSS"]
-	},
-	{title: 'Backend', items: ['Node.js', 'Express', 'ASP.NET', 'Python']},
-	{
-		title: 'Databases',
-		items: ['PostgreSQL', 'MongoDB', 'Firestore', 'RavenDB']
+		title: 'AI & Multi-Agent Systems',
+		items: ['LangGraph', 'LangChain', 'RAG Pipelines', 'Context7', 'Pinecone', 'OpenAI API', 'Vertex AI', 'AWS Bedrock']
 	},
 	{
-		title: 'Tools & Platforms',
-		items: ['AWS', 'RabbitMQ', 'Git', 'Docker', 'Splunk', 'Redis', 'Dynatrace', 'DataDog']
+		title: 'Languages',
+		items: ['TypeScript', 'JavaScript', 'Python', 'C#', 'SQL', 'Java', 'PHP']
 	},
 	{
-		title: 'AI Platforms',
-		items: ['OpenAI', 'Vertex AI', 'AWS Bedrock', 'Anthropic']
+		title: 'Frameworks & Libraries',
+		items: ['Next.js', 'React', 'Vue.js', 'ASP.NET', 'FastAPI', 'Express', 'Flask']
 	},
 	{
-		title: 'AI Frameworks/Tools',
-		items: ['RAG Pipelines', 'LangChain', 'AutoGen', 'Semantic Kernel', 'Model Context Protocol (MCP)']
+		title: 'Databases & Infrastructure',
+		items: ['PostgreSQL', 'MongoDB', 'Redis', 'Docker', 'AWS', 'RabbitMQ', 'CI/CD']
 	},
 ];
 

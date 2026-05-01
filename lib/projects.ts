@@ -16,7 +16,8 @@ export const projects: Project[] = [
 		description: "Ellory is an autonomous multi-agent AI system that takes a high-level product idea and executes a full engineering workflow, from scope and architecture to code generation and review. It combines stateful orchestration, decision loops, and real GitHub integration to simulate how a small engineering team builds software.",
 		image: "/projects/ellory.png",
 		techStack: ["LangGraph", "FastAPI", "Next.js", "TypeScript", "Tailwind CSS", "PostgreSQL", "Context7"],
-		githubUrl: "https://github.com/brostro/ellory-next"
+		githubUrl: "https://github.com/brostro/ellory-next",
+		featured: true
 	},
 	{
 		name: "AI-Powered Portfolio",

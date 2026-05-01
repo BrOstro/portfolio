@@ -29,11 +29,7 @@ export default function AboutSection({delay = 1.2, className = ""}: AboutSection
 					animate={{opacity: 1, y: 0}}
 					transition={{duration: 0.6, delay: delay + 0.4}}
 				>
-					I&apos;m a full-stack software engineer who loves building products that blend
-					thoughtful design with powerful technology.
-					Over the past few years I&apos;ve implemented major UI and UX improvements,
-					engineered core systems that drove over $130,000 in first-year ARR, and helped
-					teams adopt cutting-edge AI tools.
+					I’m a full-stack software engineer focused on building applied AI systems and production-grade developer workflows.
 				</motion.p>
 
 				<motion.p
@@ -41,9 +37,7 @@ export default function AboutSection({delay = 1.2, className = ""}: AboutSection
 					animate={{opacity: 1, y: 0}}
 					transition={{duration: 0.6, delay: delay + 0.6}}
 				>
-					At Momentus Technologies I created and delivered an applied AI curriculum that
-					upskilled more than 80 engineers and led the rollout of AI tools that boosted
-					both developer productivity and customer features.
+					At Momentus Technologies, I architected a company-wide AI framework that enables teams to build intelligent agents over internal knowledge bases and customer data. I also created and delivered an applied AI curriculum that upskilled 80+ engineers in multi-agent orchestration, LLM system design, and real-world API integration.
 				</motion.p>
 
 				<motion.p
@@ -51,9 +45,7 @@ export default function AboutSection({delay = 1.2, className = ""}: AboutSection
 					animate={{opacity: 1, y: 0}}
 					transition={{duration: 0.6, delay: delay + 0.6}}
 				>
-					Earlier in my career at Charles Schwab I focused on large-scale architecture
-					projects, migrating monoliths to microservices and improving API performance by
-					more than 50 percent.
+					Earlier in my career at Charles Schwab, I worked on large-scale backend systems, helping migrate monoliths to microservices and improving API performance by over 50 percent.
 				</motion.p>
 
 				<motion.p
@@ -61,10 +53,7 @@ export default function AboutSection({delay = 1.2, className = ""}: AboutSection
 					animate={{opacity: 1, y: 0}}
 					transition={{duration: 0.6, delay: delay + 0.6}}
 				>
-					Outside of work I build and maintain personal projects like a high-traffic
-					RuneLite plugin and a financial tracking app.
-					Both of these projects let me experiment with new frameworks and technologies
-					while creating secure, scalable applications that make a real impact.
+					Outside of work, I build systems that push beyond typical “AI demos.” I maintain a high-traffic RuneLite plugin serving 4,900+ daily users and recently built Ellory, an autonomous multi-agent system that executes a full engineering workflow from idea to codebase using stateful orchestration and real GitHub integration.
 				</motion.p>
 
 				<motion.p
@@ -72,8 +61,7 @@ export default function AboutSection({delay = 1.2, className = ""}: AboutSection
 					animate={{opacity: 1, y: 0}}
 					transition={{duration: 0.6, delay: delay + 0.6}}
 				>
-					I&apos;m excited about building tools that empower people and push the limits of
-					what&apos;s possible with technology.
+					Most of my recent work has been around building systems that move beyond simple AI demos into real workflows with state, iteration, and external integrations.
 				</motion.p>
 			</div>
 		</motion.div>
